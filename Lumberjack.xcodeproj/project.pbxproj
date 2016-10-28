@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		8528E55C1DC3EE4800C75902 /* CocoaLumberjack-Universal */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 8528E55F1DC3EE4800C75902 /* Build configuration list for PBXAggregateTarget "CocoaLumberjack-Universal" */;
+			buildPhases = (
+				8528E5601DC3EE4E00C75902 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "CocoaLumberjack-Universal";
+			productName = "CocoaLumberjack-Universal";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		18F3BF081A81D8B700692297 /* CocoaLumberjack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCB5C619D4BB6E0096E784 /* CocoaLumberjack.swift */; };
 		18F3BF0A1A81D8B700692297 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCB3185114EB418E001CFBEE /* CocoaLumberjack.framework */; };
@@ -1295,6 +1309,11 @@
 						CreatedOnToolsVersion = 6.0;
 						LastSwiftMigration = 0800;
 					};
+					8528E55C1DC3EE4800C75902 = {
+						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = GVVK9DUB7W;
+						ProvisioningStyle = Automatic;
+					};
 					DCB3185014EB418E001CFBEE = {
 						LastSwiftMigration = 0800;
 					};
@@ -1329,6 +1348,7 @@
 				19EC14721B84D134000EC2E7 /* watchOSSwiftTest Extension */,
 				19406BE01BDBABFF001194DC /* tvOSSwiftTest */,
 				18F3BFF11A81E0C700692297 /* iOSLibStaticTest */,
+				8528E55C1DC3EE4800C75902 /* CocoaLumberjack-Universal */,
 			);
 		};
 /* End PBXProject section */
@@ -1455,6 +1475,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8528E5601DC3EE4E00C75902 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "######################\n# Options\n######################\n\nREVEAL_ARCHIVE_IN_FINDER=false\n\n# FRAMEWORK_NAME=\"${PROJECT_NAME}\"\n\nFRAMEWORK_NAME=\"CocoaLumberjack\"\nSCHEME_NAME=\"CocoaLumberjack-iOS\"\n\nSIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${FRAMEWORK_NAME}.framework\"\n\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/${FRAMEWORK_NAME}.framework\"\n\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\"\n\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${FRAMEWORK_NAME}.framework\"\n\n######################\n# Build Frameworks\n######################\n\nxcodebuild -workspace ../DSSBridge.xcworkspace -scheme ${SCHEME_NAME} -sdk iphonesimulator -configuration ${CONFIGURATION} clean build CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphonesimulator 2>&1 ARCHS=\"x86_64\" ONLY_ACTIVE_ARCH=NO\n\nxcodebuild -workspace ../DSSBridge.xcworkspace -scheme ${SCHEME_NAME} -sdk iphoneos -configuration ${CONFIGURATION} clean build CONFIGURATION_BUILD_DIR=${BUILD_DIR}/${CONFIGURATION}-iphoneos 2>&1\n\n\n######################\n# Create directory for universal\n######################\n\nrm -rf \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${UNIVERSAL_LIBRARY_DIR}\"\n\nmkdir \"${FRAMEWORK}\"\n\n######################\n# Copy files Framework\n######################\n\necho \"${DEVICE_LIBRARY_PATH}\"\n\ncp -r \"${DEVICE_LIBRARY_PATH}/.\" \"${FRAMEWORK}\"\n\n######################\n# Make an universal binary\n######################\n\nlipo \"${SIMULATOR_LIBRARY_PATH}/${FRAMEWORK_NAME}\" \"${DEVICE_LIBRARY_PATH}/${FRAMEWORK_NAME}\" -create -output \"${FRAMEWORK}/${FRAMEWORK_NAME}\" | echo\n\n# For Swift framework, Swiftmodule needs to be copied in the universal framework\nif [ -d \"${SIMULATOR_LIBRARY_PATH}/Modules/${FRAMEWORK_NAME}.swiftmodule/\" ]; then\ncp -f \"${SIMULATOR_LIBRARY_PATH}/Modules/${FRAMEWORK_NAME}.swiftmodule/*\" \"${FRAMEWORK}/Modules/${FRAMEWORK_NAME}.swiftmodule/\" | echo\nfi\n\nif [ -d \"${DEVICE_LIBRARY_PATH}/Modules/${FRAMEWORK_NAME}.swiftmodule/\" ]; then\ncp -f \"${DEVICE_LIBRARY_PATH}/Modules/${FRAMEWORK_NAME}.swiftmodule/*\" \"${FRAMEWORK}/Modules/${FRAMEWORK_NAME}.swiftmodule/\" | echo\nfi\n\n######################\n# On Release, copy the result to rFRAMEWORK_NAMEelease directory\n######################\n# OUTPUT_DIR=\"${PROJECT_DIR}/Output/${FRAMEWORK_NAME}-${CONFIGURATION}-iphoneuniversal/\"\nOUTPUT_DIR=\"${PROJECT_DIR}/../../../lib/ios/\"\n\nrm -rf \"${OUTPUT_DIR}/${FRAMEWORK}\"\n\nmkdir -p \"$OUTPUT_DIR/${FRAMEWORK_NAME}.framework\"\n\ncp -r \"${FRAMEWORK}\" \"${OUTPUT_DIR}/\"\n\nif [ ${REVEAL_ARCHIVE_IN_FINDER} = true ]; then\nopen \"${OUTPUT_DIR}/\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		18F3BF071A81D8B700692297 /* Sources */ = {
@@ -2390,6 +2426,22 @@
 			};
 			name = Release;
 		};
+		8528E55D1DC3EE4800C75902 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = GVVK9DUB7W;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8528E55E1DC3EE4800C75902 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = GVVK9DUB7W;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		DCB3186414EB418E001CFBEE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2695,6 +2747,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		8528E55F1DC3EE4800C75902 /* Build configuration list for PBXAggregateTarget "CocoaLumberjack-Universal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8528E55D1DC3EE4800C75902 /* Debug */,
+				8528E55E1DC3EE4800C75902 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 		DCB3184A14EB418D001CFBEE /* Build configuration list for PBXProject "Lumberjack" */ = {
 			isa = XCConfigurationList;
